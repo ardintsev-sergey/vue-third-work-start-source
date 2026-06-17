@@ -2,34 +2,45 @@
   <div
     ref="dialog"
     class="task-card"
-    tabindex="-1"
-    @keyup.esc="closeDialog">
+    tabindex="0"
+    @click.self="closeDialog"
+    @keydown.esc="closeDialog">
     <section class="task-card__wrapper">
+      <!--Закрытие задачи-->
       <button
         class="task-card__close"
         type="button"
         @click="closeDialog" />
-
+      <!--Шапка задачи-->
       <div class="task-card__block">
         <div class="task-card__row">
+          <!--Наименование задачи-->
           <h1 class="task-card__name task-card__name--min">
             {{ task ? task.title : '' }}
           </h1>
+          <!--Кнопка редактирования задачи-->
           <a
             class="task-card__edit"
-            @click="editTask">
-            Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ Р·Р°РґР°С‡Сѓ
+            @click="
+              router.push({
+                name: 'TaskEdit',
+                params: { id: $route.params.id },
+              })
+            ">
+            Редактировать задачу
           </a>
         </div>
+        <!--Дата создания задачи-->
         <p class="task-card__date">
-          {{ taskCardDate }}
+          {{ useTaskCardDate(task) }}
         </p>
       </div>
-
+      <!--Участник задачи и срок выполнения-->
       <div class="task-card__block">
         <ul class="task-card__params">
+          <!--Участник задачи-->
           <li v-if="task && task.user">
-            РЈС‡Р°СЃС‚РЅРёРє:
+            Участник:
             <div class="task-card__participant">
               <button
                 type="button"
@@ -41,8 +52,9 @@
               </button>
             </div>
           </li>
+          <!--Срок выполнения-->
           <li v-if="dueDate">
-            РЎСЂРѕРє:
+            Срок:
             <button
               type="button"
               class="task-card__date-link">
@@ -51,36 +63,51 @@
           </li>
         </ul>
       </div>
-
+      <!--Описание задачи-->
       <div class="task-card__block">
         <div
           v-if="task && task.description"
           class="task-card__description">
-          <h4 class="task-card__title">РћРїРёСЃР°РЅРёРµ</h4>
+          <h4 class="task-card__title">Описание</h4>
           <p>{{ task.description }}</p>
         </div>
       </div>
-
+      <!--Дополнительная ссылка-->
       <div
         v-if="task && task.url"
         class="task-card__block task-card__links">
-        <h4 class="task-card__title">РЎСЃС‹Р»РєРё</h4>
+        <h4 class="task-card__title">Ссылки</h4>
 
         <div class="task-card__links-item">
           <a
             :href="task.url"
             target="_blank">
-            {{ task.urlDescription || 'СЃСЃС‹Р»РєР°' }}
+            {{ task.urlDescription || 'ссылка' }}
           </a>
         </div>
       </div>
-
+      <!--Чеклист-->
+      <div
+        v-if="task && task.ticks && task.ticks.length"
+        class="task-card__block">
+        <task-card-view-ticks-list
+          :ticks="task.ticks"
+          disabled />
+      </div>
+      <!--Метки-->
       <div
         v-if="task && task.tags && task.tags.length"
         class="task-card__block">
-        <h4 class="task-card__title">РњРµС‚РєРё</h4>
+        <h4 class="task-card__title">Метки</h4>
         <task-card-tags :tags="task.tags" />
       </div>
+      <!--Комментарии-->
+      <task-card-view-comments
+        v-if="task"
+        class="task-card__comments"
+        :comments="task.comments || []"
+        :task-id="task.id"
+        @create-new-comment="addCommentToList" />
     </section>
   </div>
 </template>
@@ -91,7 +118,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { useTaskCardDate } from '../common/composables';
 import { getReadableDate, getImage } from '../common/helpers';
 import TaskCardTags from '../modules/tasks/components/TaskCardTags.vue';
-
+import TaskCardViewTicksList from '../modules/tasks/components/TaskCardViewTicksList.vue';
+import TaskCardViewComments from '../modules/tasks/components/TaskCardViewComments.vue';
 const props = defineProps({
   tasks: {
     type: Array,
@@ -129,6 +157,13 @@ const dueDate = computed(() => {
 onMounted(() => {
   dialog.value?.focus();
 });
+
+const addCommentToList = function (comment) {
+  if (!task.value.comments) {
+    task.value.comments = [];
+  }
+  task.value.comments.push(comment);
+};
 </script>
 
 <style lang="scss" scoped>
