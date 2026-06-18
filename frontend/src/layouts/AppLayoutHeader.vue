@@ -23,10 +23,10 @@
       <button type="submit">Найти</button>
     </form>
 
-    <a
-      href="#"
+    <router-link
+      to="/tasks/create"
       class="header__create-task"
-      >Создать карточку</a
+      >Создать карточку</router-link
     >
 
     <a

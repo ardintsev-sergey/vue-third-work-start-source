@@ -71,6 +71,12 @@
         class="desk__emptiness">
         Пока нет ни одной колонки
       </p>
+      <!--      Отображение дочерних маршрутов-->
+      <router-view
+        :tasks="props.tasks"
+        @add-task="$emit('addTask', $event)"
+        @edit-task="$emit('editTask', $event)"
+        @delete-task="$emit('deleteTask', $event)" />
     </section>
   </main>
 </template>
