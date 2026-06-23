@@ -115,48 +115,37 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useTaskCardDate } from '../common/composables';
 import { getReadableDate, getImage } from '../common/helpers';
-import TaskCardTags from '../modules/tasks/components/TaskCardTags.vue';
+import { useTaskCardDate } from '../common/composables';
 import TaskCardViewTicksList from '../modules/tasks/components/TaskCardViewTicksList.vue';
+import TaskCardTags from '../modules/tasks/components/TaskCardTags.vue';
 import TaskCardViewComments from '../modules/tasks/components/TaskCardViewComments.vue';
-const props = defineProps({
-  tasks: {
-    type: Array,
-    required: true,
-  },
-});
+import { useTasksStore } from '@/stores';
+
+const tasksStore = useTasksStore();
 
 const router = useRouter();
 const route = useRoute();
+
 const dialog = ref(null);
 
-const closeDialog = () => {
-  router.push('/');
-};
-
-const editTask = () => {
-  router.push({
-    name: 'TaskEdit',
-    params: { id: route.params.id },
-  });
-};
-
-const task = computed(() => {
-  return props.tasks.find((item) => item.id == route.params.id);
+onMounted(() => {
+  // Фокусируем на диалоговом окне чтобы сработала клавиша esc без дополнительного клика на окне
+  dialog.value.focus();
 });
 
-const taskCardDate = computed(() => {
-  return task.value ? useTaskCardDate(task.value).value : '';
+// Найдем задачу по id из массива задач
+const task = computed(() => {
+  return tasksStore.tasks.find((task) => task.id == route.params.id);
 });
 
 const dueDate = computed(() => {
-  return getReadableDate(task.value?.dueDate || '');
+  return getReadableDate(task.value.dueDate || '');
 });
 
-onMounted(() => {
-  dialog.value?.focus();
-});
+const closeDialog = function () {
+  router.push('/');
+};
 
 const addCommentToList = function (comment) {
   if (!task.value.comments) {
