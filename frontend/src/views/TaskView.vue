@@ -5,7 +5,9 @@
     tabindex="0"
     @click.self="closeDialog"
     @keydown.esc="closeDialog">
-    <section class="task-card__wrapper">
+    <section
+      v-if="task"
+      class="task-card__wrapper">
       <!--Закрытие задачи-->
       <button
         class="task-card__close"
@@ -16,10 +18,11 @@
         <div class="task-card__row">
           <!--Наименование задачи-->
           <h1 class="task-card__name task-card__name--min">
-            {{ task ? task.title : '' }}
+            {{ task.title }}
           </h1>
           <!--Кнопка редактирования задачи-->
           <a
+            v-if="authStore.getUserAttribute('isAdmin')"
             class="task-card__edit"
             @click="
               router.push({
@@ -46,7 +49,7 @@
                 type="button"
                 class="task-card__user">
                 <img
-                  :src="getImage(task.user.avatar)"
+                  :src="getPublicImage(task.user.avatar)"
                   :alt="task.user.name" />
                 {{ task.user.name }}
               </button>
@@ -66,7 +69,7 @@
       <!--Описание задачи-->
       <div class="task-card__block">
         <div
-          v-if="task && task.description"
+          v-if="task.description"
           class="task-card__description">
           <h4 class="task-card__title">Описание</h4>
           <p>{{ task.description }}</p>
@@ -74,7 +77,7 @@
       </div>
       <!--Дополнительная ссылка-->
       <div
-        v-if="task && task.url"
+        v-if="task.url"
         class="task-card__block task-card__links">
         <h4 class="task-card__title">Ссылки</h4>
 
@@ -88,7 +91,7 @@
       </div>
       <!--Чеклист-->
       <div
-        v-if="task && task.ticks && task.ticks.length"
+        v-if="task.ticks && task.ticks.length"
         class="task-card__block">
         <task-card-view-ticks-list
           :ticks="task.ticks"
@@ -96,18 +99,16 @@
       </div>
       <!--Метки-->
       <div
-        v-if="task && task.tags && task.tags.length"
+        v-if="task.tags && task.tags.length"
         class="task-card__block">
         <h4 class="task-card__title">Метки</h4>
         <task-card-tags :tags="task.tags" />
       </div>
       <!--Комментарии-->
       <task-card-view-comments
-        v-if="task"
+        v-if="authStore.isAuthenticated"
         class="task-card__comments"
-        :comments="task.comments || []"
-        :task-id="task.id"
-        @create-new-comment="addCommentToList" />
+        :task-id="task.id" />
     </section>
   </div>
 </template>
@@ -115,14 +116,15 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getReadableDate, getImage } from '../common/helpers';
+import { getReadableDate, getPublicImage } from '../common/helpers';
 import { useTaskCardDate } from '../common/composables';
 import TaskCardViewTicksList from '../modules/tasks/components/TaskCardViewTicksList.vue';
 import TaskCardTags from '../modules/tasks/components/TaskCardTags.vue';
 import TaskCardViewComments from '../modules/tasks/components/TaskCardViewComments.vue';
-import { useTasksStore } from '@/stores';
+import { useTasksStore, useAuthStore } from '@/stores';
 
 const tasksStore = useTasksStore();
+const authStore = useAuthStore();
 
 const router = useRouter();
 const route = useRoute();
@@ -136,8 +138,13 @@ onMounted(() => {
 
 // Найдем задачу по id из массива задач
 const task = computed(() => {
-  return tasksStore.tasks.find((task) => task.id == route.params.id);
+  return tasksStore.getTaskById(route.params.id);
 });
+
+if (!task.value) {
+  // Вернуть пользователя на главную страницу если задача не найдена
+  router.push('/');
+}
 
 const dueDate = computed(() => {
   return getReadableDate(task.value.dueDate || '');
@@ -145,13 +152,6 @@ const dueDate = computed(() => {
 
 const closeDialog = function () {
   router.push('/');
-};
-
-const addCommentToList = function (comment) {
-  if (!task.value.comments) {
-    task.value.comments = [];
-  }
-  task.value.comments.push(comment);
 };
 </script>
 
@@ -352,7 +352,7 @@ const addCommentToList = function (comment) {
     }
   }
 
-  :deep(.task-card__link) {
+  :deep(&__link) {
     position: relative;
 
     margin: 0;
@@ -367,7 +367,7 @@ const addCommentToList = function (comment) {
 
     @include r-s16-h21;
 
-    &::after {
+    &:after {
       position: absolute;
       top: 2px;
       right: 0;
@@ -379,14 +379,14 @@ const addCommentToList = function (comment) {
       transition: opacity $animationSpeed;
 
       opacity: 0;
-      background-image: url('@/assets/img/icon-pencil.svg');
+      background-image: url('~@/assets/img/icon-pencil.svg');
       background-size: cover;
     }
 
     &:hover {
       text-decoration: none;
 
-      &::after {
+      &:after {
         opacity: 1;
       }
     }
@@ -421,7 +421,7 @@ const addCommentToList = function (comment) {
     }
   }
 
-  :deep(.task-card__title) {
+  :deep(&__title) {
     margin: 0;
 
     color: $gray-900;
@@ -469,7 +469,7 @@ const addCommentToList = function (comment) {
     margin-top: 15px;
   }
 
-  :deep(.task-card__item) {
+  :deep(&__item) {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -483,7 +483,7 @@ const addCommentToList = function (comment) {
     }
   }
 
-  :deep(.task-card__icons) {
+  :deep(&__icons) {
     transition: opacity $animationSpeed;
 
     opacity: 0;

@@ -11,6 +11,7 @@
         class="task-card__close"
         type="button"
         @click="closeDialog" />
+
       <!--      Блок ввода имени и удаления задачи-->
       <div class="task-card__block">
         <div class="task-card__row">
@@ -132,7 +133,6 @@
           :tags="task.tags"
           @setTags="setTags" />
       </div>
-      <!--...-->
 
       <!--      Блок сохранения и отмены изменений-->
       <div class="task-card__buttons">
@@ -169,9 +169,7 @@ import taskStatuses from '@/common/enums/taskStatuses';
 import { validateFields } from '@/common/validator';
 import { useTaskCardDate } from '@/common/composables';
 import { cloneDeep } from 'lodash';
-import { useTasksStore } from '@/stores/tasks';
-
-const tasksStore = useTasksStore();
+import { useTasksStore, useTicksStore } from '@/stores';
 
 // Функция для создания новых задач
 const createNewTask = () => ({
@@ -215,6 +213,10 @@ const props = defineProps({
     default: null,
   },
 });
+
+// Определяем хранилище задач
+const tasksStore = useTasksStore();
+const ticksStore = useTicksStore();
 
 // Определяем если мы работаем над редактированием задачи или создаем новую
 const taskToWork = props.taskToEdit ? cloneDeep(props.taskToEdit) : createNewTask();
@@ -286,6 +288,7 @@ function removeTick({ uuid, id }) {
   }
   if (id) {
     task.value.ticks = task.value.ticks.filter((tick) => tick.id !== id);
+    ticksStore.deleteTick(id);
   }
 }
 
@@ -293,21 +296,37 @@ function setTags(tags) {
   task.value.tags = tags;
 }
 
-function submit() {
+async function submit() {
   // Валидируем задачу
   if (!validateFields(task.value, validations.value)) {
     isFormValid.value = false;
     return;
   }
+  let taskId = task.value.id;
   if (props.taskToEdit) {
     // Редактируемая задача
-    tasksStore.editTask(task.value);
+    await tasksStore.editTask(task.value);
   } else {
     // Новая задача
-    tasksStore.addTask(task.value);
+    const newTask = await tasksStore.addTask(task.value);
+    taskId = newTask.id;
   }
+  // Создать или обновить подзадачи
+  await submitTicks(taskId, task.value.ticks);
   // Переход на главную страницу
-  router.push('/');
+  await router.push('/');
+}
+
+async function submitTicks(taskId, ticks) {
+  const promises = ticks.map((tick) => {
+    if (!tick.text) {
+      return;
+    }
+    delete tick.uuid;
+    tick.taskId = taskId;
+    return tick.id ? ticksStore.updateTick(tick) : ticksStore.addTick(tick);
+  });
+  await Promise.all(promises);
 }
 </script>
 

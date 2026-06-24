@@ -41,7 +41,7 @@ export default class FetchProvider {
     }
     return this;
   }
-  // Метод для обработки ошибок
+  // Метод для отработки ошибок
   async onError(response) {
     if (response.json) {
       const { error } = await response.json();
