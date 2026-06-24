@@ -19,7 +19,8 @@ export default defineConfig({
     port: 8080,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000/',
+        target: 'https://work.vue.htmlacademy.pro/',
+        changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },

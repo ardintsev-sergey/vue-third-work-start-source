@@ -169,7 +169,8 @@ import taskStatuses from '@/common/enums/taskStatuses';
 import { validateFields } from '@/common/validator';
 import { useTaskCardDate } from '@/common/composables';
 import { cloneDeep } from 'lodash';
-import { useTasksStore, useTicksStore } from '@/stores';
+import { useTasksStore } from '@/stores/tasks';
+import { useTicksStore } from '@/stores/ticks';
 
 // Функция для создания новых задач
 const createNewTask = () => ({
@@ -390,7 +391,7 @@ async function submitTicks(taskId, ticks) {
       width: 24px;
       height: 24px;
 
-      background-image: url('~@/assets/img/status-time.svg');
+      background-image: url('@/assets/img/status-time.svg');
       background-repeat: no-repeat;
       background-size: cover;
     }
@@ -399,7 +400,7 @@ async function submitTicks(taskId, ticks) {
       width: 24px;
       height: 24px;
 
-      background-image: url('~@/assets/img/status-alert.svg');
+      background-image: url('@/assets/img/status-alert.svg');
       background-repeat: no-repeat;
       background-size: cover;
     }

@@ -44,8 +44,17 @@ export default class FetchProvider {
   // Метод для отработки ошибок
   async onError(response) {
     if (response.json) {
-      const { error } = await response.json();
-      const { message, statusCode } = error;
+      let message = response.statusText || 'Request failed';
+      let statusCode = response.status;
+
+      try {
+        const { error } = await response.json();
+        message = error?.message || message;
+        statusCode = error?.statusCode || statusCode;
+      } catch {
+        message = `Backend request failed (${statusCode})`;
+      }
+
       this.interceptors.forEach((interceptor) => {
         if (interceptor.onError) {
           interceptor.onError(statusCode, message);

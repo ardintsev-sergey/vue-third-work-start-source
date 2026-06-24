@@ -50,7 +50,7 @@ import AppDrop from '@/common/components/AppDrop.vue';
 import AppIcon from '@/common/components/AppIcon.vue';
 import TaskCard from '@/modules/tasks/components/TaskCard.vue';
 import { getTargetColumnTasks, addActive } from '@/common/helpers';
-import { useTasksStore } from '@/stores';
+import { useTasksStore } from '@/stores/tasks';
 
 const tasksStore = useTasksStore();
 

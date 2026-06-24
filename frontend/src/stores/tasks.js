@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
-import { useUsersStore, useFiltersStore, useTicksStore } from '@/stores';
+import { useFiltersStore } from '@/stores/filters';
+import { useTicksStore } from '@/stores/ticks';
+import { useUsersStore } from '@/stores/users';
 import { tasksService } from '@/services';
 
 export const useTasksStore = defineStore('tasks', {

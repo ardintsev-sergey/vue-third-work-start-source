@@ -67,7 +67,7 @@ import AppButton from '@/common/components/AppButton.vue';
 import AppInput from '@/common/components/AppInput.vue';
 import { validateFields, clearValidationErrors } from '@/common/validator';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const authStore = useAuthStore();

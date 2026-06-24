@@ -12,6 +12,12 @@ services:
   backend:
     build: ./backend
     command: npm start
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: psql
+      DB_DATABASE: postgres
     volumes:
       - ./backend:/backend
     depends_on:

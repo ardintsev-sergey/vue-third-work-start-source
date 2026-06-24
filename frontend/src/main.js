@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { clickOutside } from './common/directives';
-import { useAuthStore } from '@/stores';
+import { useAuthStore } from '@/stores/auth';
 import { getToken, removeToken } from '@/services/token-manager';
 
 import App from './App.vue';
@@ -16,8 +16,12 @@ app.directive('click-outside', clickOutside);
 app.mount('#app');
 
 // Проверяем если пользователь уже вошел в систему
-const token = getToken();
-if (token) {
+async function restoreSession() {
+  const token = getToken();
+  if (!token) {
+    return;
+  }
+
   try {
     const authStore = useAuthStore();
     await authStore.getMe();
@@ -27,3 +31,5 @@ if (token) {
     console.log(e);
   }
 }
+
+restoreSession();

@@ -46,7 +46,8 @@ import { validateFields, clearValidationErrors } from '../../../common/validator
 import AppTextarea from '@/common/components/AppTextarea.vue';
 import AppButton from '@/common/components/AppButton.vue';
 import { getPublicImage } from '@/common/helpers';
-import { useAuthStore, useCommentsStore } from '@/stores';
+import { useAuthStore } from '@/stores/auth';
+import { useCommentsStore } from '@/stores/comments';
 
 const authStore = useAuthStore();
 const commentsStore = useCommentsStore();

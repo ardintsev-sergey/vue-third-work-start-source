@@ -50,7 +50,7 @@ import { getImage } from '../../../common/helpers';
 import AppIcon from '@/common/components/AppIcon.vue';
 import { ref, computed } from 'vue';
 import { getPublicImage } from '../../../common/helpers';
-import { useUsersStore } from '@/stores';
+import { useUsersStore } from '@/stores/users';
 
 const usersStore = useUsersStore();
 

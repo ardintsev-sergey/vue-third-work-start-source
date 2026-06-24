@@ -1,3 +1,4 @@
+import './node26-compat';
 import {ApplicationConfig, Application} from './application';
 import factory from './factory/index';
 

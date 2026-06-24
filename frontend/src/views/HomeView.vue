@@ -82,7 +82,9 @@
 import { STATUSES } from '../common/constants';
 import DeskColumn from '@/modules/columns/components/DeskColumn.vue';
 import { getPublicImage } from '../common/helpers';
-import { useUsersStore, useColumnsStore, useFiltersStore } from '@/stores';
+import { useColumnsStore } from '@/stores/columns';
+import { useFiltersStore } from '@/stores/filters';
+import { useUsersStore } from '@/stores/users';
 
 // Определяем хранилища
 const usersStore = useUsersStore();

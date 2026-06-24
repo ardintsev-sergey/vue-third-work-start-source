@@ -8,6 +8,14 @@
 import { shallowRef, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import AppLayoutDefault from './AppLayoutDefault.vue';
+import AppLayoutHeader from './AppLayoutHeader.vue';
+import AppLayoutSidebar from './AppLayoutSidebar.vue';
+
+const layouts = {
+  AppLayoutDefault,
+  AppLayoutHeader,
+  AppLayoutSidebar,
+};
 
 const route = useRoute();
 const layout = shallowRef(null);
@@ -19,8 +27,7 @@ watch(
     try {
       if (meta.layout) {
         // Пробуем найти компонент из свойства meta и динамически импортировать его
-        const component = await import(`./${meta.layout}.vue`);
-        layout.value = component?.default || AppLayoutDefault;
+        layout.value = layouts[meta.layout] || AppLayoutDefault;
       } else {
         layout.value = AppLayoutDefault;
       }

@@ -121,7 +121,8 @@ import { useTaskCardDate } from '../common/composables';
 import TaskCardViewTicksList from '../modules/tasks/components/TaskCardViewTicksList.vue';
 import TaskCardTags from '../modules/tasks/components/TaskCardTags.vue';
 import TaskCardViewComments from '../modules/tasks/components/TaskCardViewComments.vue';
-import { useTasksStore, useAuthStore } from '@/stores';
+import { useAuthStore } from '@/stores/auth';
+import { useTasksStore } from '@/stores/tasks';
 
 const tasksStore = useTasksStore();
 const authStore = useAuthStore();
@@ -352,46 +353,6 @@ const closeDialog = function () {
     }
   }
 
-  :deep(&__link) {
-    position: relative;
-
-    margin: 0;
-    padding: 0 23px 0 0;
-
-    cursor: pointer;
-    text-decoration: underline;
-
-    color: $blue-gray-600;
-    border: none;
-    background-color: transparent;
-
-    @include r-s16-h21;
-
-    &:after {
-      position: absolute;
-      top: 2px;
-      right: 0;
-
-      width: 14px;
-      height: 14px;
-
-      content: '';
-      transition: opacity $animationSpeed;
-
-      opacity: 0;
-      background-image: url('~@/assets/img/icon-pencil.svg');
-      background-size: cover;
-    }
-
-    &:hover {
-      text-decoration: none;
-
-      &:after {
-        opacity: 1;
-      }
-    }
-  }
-
   &__links-item {
     margin-top: 16px;
 
@@ -419,14 +380,6 @@ const closeDialog = function () {
       font-style: normal;
       line-height: 21px;
     }
-  }
-
-  :deep(&__title) {
-    margin: 0;
-
-    color: $gray-900;
-
-    @include m-s18-h21;
   }
 
   &__description {
@@ -467,26 +420,6 @@ const closeDialog = function () {
     @include clear-list;
 
     margin-top: 15px;
-  }
-
-  :deep(&__item) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    margin-top: 10px;
-
-    &:hover {
-      .task-card__icons {
-        opacity: 1;
-      }
-    }
-  }
-
-  :deep(&__icons) {
-    transition: opacity $animationSpeed;
-
-    opacity: 0;
   }
 
   &__buttons {
@@ -542,5 +475,73 @@ const closeDialog = function () {
       color: $red-500;
     }
   }
+}
+
+:deep(.task-card__link) {
+  position: relative;
+
+  margin: 0;
+  padding: 0 23px 0 0;
+
+  cursor: pointer;
+  text-decoration: underline;
+
+  color: $blue-gray-600;
+  border: none;
+  background-color: transparent;
+
+  @include r-s16-h21;
+
+  &:after {
+    position: absolute;
+    top: 2px;
+    right: 0;
+
+    width: 14px;
+    height: 14px;
+
+    content: '';
+    transition: opacity $animationSpeed;
+
+    opacity: 0;
+    background-image: url('@/assets/img/icon-pencil.svg');
+    background-size: cover;
+  }
+
+  &:hover {
+    text-decoration: none;
+
+    &:after {
+      opacity: 1;
+    }
+  }
+}
+
+:deep(.task-card__title) {
+  margin: 0;
+
+  color: $gray-900;
+
+  @include m-s18-h21;
+}
+
+:deep(.task-card__item) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 10px;
+
+  &:hover {
+    .task-card__icons {
+      opacity: 1;
+    }
+  }
+}
+
+:deep(.task-card__icons) {
+  transition: opacity $animationSpeed;
+
+  opacity: 0;
 }
 </style>

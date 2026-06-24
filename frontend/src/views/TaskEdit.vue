@@ -8,7 +8,7 @@
 import TaskCardCreator from '../modules/tasks/components/TaskCardCreator.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { createNewDate } from '../common/helpers';
-import { useTasksStore } from '@/stores';
+import { useTasksStore } from '@/stores/tasks';
 
 const tasksStore = useTasksStore();
 
