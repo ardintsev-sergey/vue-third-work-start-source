@@ -1,13 +1,16 @@
 <template>
   <div class="task-card__tags">
-    <div class="task-card__tags--text">Добавьте теги, разделённые символом #</div>
-    <task-card-creator-tags-analyzer
-      v-if="showAnalyzer"
-      class="task-card__tags-analyzer"
-      :tags="tags"
-      @setTags="setTags" />
+    <div class="task-card__tags--text">Добавьте тэги, разделенные символом #</div>
+    <transition name="replace">
+      <task-card-creator-tags-analyzer
+        v-if="showAnalyzer"
+        class="task-card__tags-analyzer"
+        :tags="tags"
+        @setTags="setTags" />
+    </transition>
   </div>
 </template>
+
 <script setup>
 import { ref } from 'vue';
 import TaskCardCreatorTagsAnalyzer from './TaskCardCreatorTagsAnalyzer.vue';
@@ -32,7 +35,7 @@ function setTags(tags, refresh) {
     timeout.value = setTimeout(() => {
       showAnalyzer.value = true;
       clearTimeout(timeout.value);
-    });
+    }, 500);
   } else {
     emits('setTags', tags);
   }
@@ -62,5 +65,15 @@ function setTags(tags, refresh) {
 
     @include r-s10-h12;
   }
+}
+
+.replace-enter-active,
+.replace-leave-active {
+  transition: opacity $animationSpeed;
+}
+
+.replace-enter,
+.replace-leave-to {
+  opacity: 0;
 }
 </style>

@@ -5,7 +5,9 @@
     @drop="moveTask">
     <h2 class="column__name">
       <!--      Показывает наименование колонки-->
-      <span v-if="!state.isInputShowed">
+      <span
+        v-if="!state.isInputShowed"
+        data-test="desk-column-title">
         {{ state.columnTitle }}
       </span>
 
@@ -32,14 +34,20 @@
         @click="$emit('delete', column.id)" />
     </h2>
 
-    <div class="column__target-area">
+    <div
+      data-test="column-target-area"
+      class="column__target-area">
       <!--      Вынесли задачи в отдельный компонент-->
-      <task-card
-        v-for="task in columnTasks"
-        :key="task.id"
-        :task="task"
-        class="column__task"
-        @drop="moveTask($event, task)" />
+      <transition-group name="tasks">
+        <div
+          v-for="task in columnTasks"
+          :key="task.id">
+          <task-card
+            :task="task"
+            class="column__task"
+            @drop="moveTask($event, task)" />
+        </div>
+      </transition-group>
     </div>
   </app-drop>
 </template>
@@ -50,7 +58,7 @@ import AppDrop from '@/common/components/AppDrop.vue';
 import AppIcon from '@/common/components/AppIcon.vue';
 import TaskCard from '@/modules/tasks/components/TaskCard.vue';
 import { getTargetColumnTasks, addActive } from '@/common/helpers';
-import { useTasksStore } from '@/stores/tasks';
+import { useTasksStore } from '@/stores';
 
 const tasksStore = useTasksStore();
 
@@ -122,6 +130,7 @@ function moveTask(active, toTask) {
 
 <style lang="scss" scoped>
 @import '@/assets/scss/app.scss';
+
 .column {
   display: flex;
   flex-direction: column;
@@ -198,5 +207,17 @@ function moveTask(active, toTask) {
     margin-right: 5px;
     margin-left: 5px;
   }
+}
+
+.tasks-enter-active,
+.tasks-leave-active {
+  transition: all $animationSpeed ease;
+}
+
+.tasks-enter,
+.tasks-leave-to {
+  transform: scale(1.1);
+
+  opacity: 0;
 }
 </style>
